@@ -50,6 +50,7 @@ run_model <- function(model = "odin_model",
     "odin_model_TBV" = odin_model_TBV,
     "odin_model_mass_effect" = odin_model_mass_effect,
     "odin_model_mass_effect_pp" = odin_model_mass_effect_pp,
+    "odin_model_asb" = odin_model_asb,
     stop(sprintf("Unknown model '%s'", model)))
 
   # There are many parameters used that should not be passed through
