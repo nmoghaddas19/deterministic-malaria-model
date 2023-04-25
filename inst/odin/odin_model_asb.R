@@ -229,8 +229,8 @@ foi_age[] <- user()
 dim(rel_foi) <- nh
 rel_foi[] <- user()
 dim(EIR) <- c(na,nh,num_int)
-EIR[,,] <- av_human[k] * rel_foi[j] * foi_age[i] * Iv/omega
-output(Ivout) <- Iv
+EIR[,,] <- av_human[k] * rel_foi[j] * foi_age[i] * (Iv+Ivasb)/omega
+output(Ivout) <- Iv+Ivasb
 
 output(omega) <- omega
 ##------------------------------------------------------------------------------
@@ -326,25 +326,28 @@ betaa <- 0.5*PL/dPL
 # time we turn ASB on and off
 asb_on <- user()
 asb_off <- user()
-mu_asb <- user() # additional mortality due to feeding
+# mu_asb <- user() # additional mortality due to feeding
 
 # new model parameters
 feeding_rate <- user() # daily asb feeding rate
-u_asb <- mu + mu_asb
-asb_coverage <- user() # coverage or efficacy of ASBs or ATSBs
-asb_cov <- if(asb_on <= t && asb_off > t) (asb_coverage) else 0
+eff_feeding_rate <- if(asb_on <= t && asb_off > t) (feeding_rate) else 0
 
-asb_eff_coverage <- asb_cov * feeding_rate
+u_asb <- user() # mortality due to feeding
+mu_asb <- mu + u_asb # adjusted mortality
 
 # no asb
-deriv(Sv) <- -ince - asb_eff_coverage*Sv - mu*Sv + betaa
-deriv(Ev) <- ince - incv - asb_eff_coverage*Ev - mu*Ev
-deriv(Iv) <- incv - asb_eff_coverage*Iv - mu*Iv
+deriv(Sv) <- -ince - eff_feeding_rate*Sv - mu*Sv + betaa
+deriv(Ev) <- ince - incv - eff_feeding_rate*Ev - mu*Ev
+deriv(Iv) <- incv - eff_feeding_rate*Iv - mu*Iv
 
 # asb
-deriv(Svasb) <- -ince_asb + asb_eff_coverage*Sv - u_asb*Svasb
-deriv(Evasb) <- ince_asb - incv_asb + asb_eff_coverage*Ev - u_asb*Evasb
-deriv(Ivasb) <- incv_asb + asb_eff_coverage*Iv - u_asb*Ivasb
+deriv(Svasb) <- -ince_asb + eff_feeding_rate*Sv - mu_asb*Svasb
+deriv(Evasb) <- ince_asb - incv_asb + eff_feeding_rate*Ev - mu_asb*Evasb
+deriv(Ivasb) <- incv_asb + eff_feeding_rate*Iv - mu_asb*Ivasb
+
+# Sv <- Svn + Svasb
+# Ev <- Evn + Evasb
+# Iv <- Ivn + Ivasb
 
 # deriv(Sv) <- -ince - mu*Sv + betaa
 # deriv(Ev) <- ince - incv - mu*Ev
@@ -570,3 +573,4 @@ output(r_IRS) <- r_IRS
 output(s_IRS) <- s_IRS
 output(cov[]) <- TRUE
 output(K0) <- K0
+output(betaa) <- betaa
