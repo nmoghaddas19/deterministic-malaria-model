@@ -335,15 +335,17 @@ eff_feeding_rate <- if(asb_on <= t && asb_off > t) (feeding_rate) else 0
 u_asb <- user() # mortality due to feeding
 mu_asb <- mu + u_asb # adjusted mortality
 
+dye_days <- user()
+
 # no asb
-deriv(Sv) <- -ince - eff_feeding_rate*Sv - mu*Sv + betaa
-deriv(Ev) <- ince - incv - eff_feeding_rate*Ev - mu*Ev
-deriv(Iv) <- incv - eff_feeding_rate*Iv - mu*Iv
+deriv(Sv) <- -ince - eff_feeding_rate*Sv - mu*Sv + betaa + dye_days*Svasb
+deriv(Ev) <- ince - incv - eff_feeding_rate*Ev - mu*Ev + dye_days*Evasb
+deriv(Iv) <- incv - eff_feeding_rate*Iv - mu*Iv + dye_days*Ivasb
 
 # asb
-deriv(Svasb) <- -ince_asb + eff_feeding_rate*Sv - mu_asb*Svasb
-deriv(Evasb) <- ince_asb - incv_asb + eff_feeding_rate*Ev - mu_asb*Evasb
-deriv(Ivasb) <- incv_asb + eff_feeding_rate*Iv - mu_asb*Ivasb
+deriv(Svasb) <- -ince_asb + eff_feeding_rate*Sv - mu_asb*Svasb - dye_days*Svasb
+deriv(Evasb) <- ince_asb - incv_asb + eff_feeding_rate*Ev - mu_asb*Evasb - dye_days*Evasb
+deriv(Ivasb) <- incv_asb + eff_feeding_rate*Iv - mu_asb*Ivasb - dye_days*Ivasb
 
 # Sv <- Svn + Svasb
 # Ev <- Evn + Evasb
