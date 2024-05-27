@@ -59,7 +59,7 @@ run_model <- function(model = "odin_model",
 
   # create model with initial values
   mod <- generator(user = state_use, use_dde = TRUE)
-  tt <- seq(0, time, 0.1)
+  tt <- seq(0, time, 1)
 
   # run model
   mod_run <- mod$run(tt)
